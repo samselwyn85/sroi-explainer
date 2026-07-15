@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SROI calculator — build your own model</title>
+<meta name="description" content="A working SROI calculator. Add your own benefit lines, set parameters and proxy values, and get a benefit–cost ratio. Worked example preloaded.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html">SROI, explained</a>
+  <a href="index.html">← Back to the guide</a>
+  <a href="#how">How it calculates</a>
+</div></nav>
+
+<header class="page"><div class="wrap">
+  <span class="eyebrow">The tool</span>
+  <h1>SROI calculator</h1>
+  <p class="lede">Build a model benefit by benefit. Each line needs a proxy value plus three parameters per year — segment share, success rate, and units per person. The results bar updates as you type. Load the worked example to see a complete, published model, or start blank and build your own.</p>
+
+  <div class="toolbar" role="group" aria-label="Model actions">
+    <button class="primary" id="btn-example">Load worked example</button>
+    <button id="btn-blank">Start blank</button>
+    <button id="btn-add">+ Add a benefit</button>
+  </div>
+
+  <div class="toolbar" role="group" aria-label="Global settings">
+    <div class="field">
+      <label for="g-cohort">Cohort (people)</label>
+      <input type="number" id="g-cohort" min="1" step="1" value="2453">
+    </div>
+    <div class="field">
+      <label for="g-rate">Discount rate %</label>
+      <input type="number" id="g-rate" min="0" max="20" step="0.5" value="2">
+    </div>
+    <div class="field" style="width:190px">
+      <label for="g-cost">Programme cost PV $</label>
+      <input type="number" id="g-cost" min="0" step="1000" value="5644906">
+    </div>
+  </div>
+
+  <div class="results" aria-live="polite">
+    <div><div class="v mono" id="r-pv">—</div><div class="l">PV of benefits</div></div>
+    <div><div class="v mono" id="r-cost">—</div><div class="l">PV of costs</div></div>
+    <div class="bcr"><div class="v mono" id="r-bcr">—</div><div class="l">Benefit–cost ratio</div></div>
+    <div><div class="v mono" id="r-npv">—</div><div class="l">Net present value</div></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <h2 style="font-size:22px">Benefits</h2>
+  <div id="benefits"></div>
+  <div class="toolbar">
+    <button id="btn-add-2">+ Add a benefit</button>
+  </div>
+
+  <h2 style="font-size:22px; margin-top:34px">Where the value sits</h2>
+  <p style="font-size:15px; color:var(--ink-soft)">Each benefit's share of the total. If one or two lines dominate, that's where your evidence needs to be strongest.</p>
+  <ul class="shares" id="shares"></ul>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <span class="eyebrow">Under the hood</span>
+  <h2>How each line is calculated</h2>
+  <div class="formula">
+    <div><span class="c"># for each benefit, for each year t = 1, 2, 3</span></div>
+    <div><span class="k">quantity</span> = cohort × (segment % ÷ 100) × (success % ÷ 100) × units per person</div>
+    <div><span class="k">value</span>    = quantity × proxy $ per unit</div>
+    <div><span class="k">pv</span>       = value ÷ (1 + rate) ^ (t − 0.5)   <span class="c">← mid-year discounting, CBAx-style</span></div>
+    <div>&nbsp;</div>
+    <div><span class="k">BCR</span> = total PV of benefits ÷ cost PV</div>
+    <div><span class="k">NPV</span> = total PV of benefits − cost PV</div>
+  </div>
+  <p style="font-size:15px; color:var(--ink-soft); max-width:72ch">Deadweight, attribution and drop-off are not separate multipliers here — they should already be embedded in your parameters. Segment share counts only people plausibly exposed <em>above business-as-usual</em>; success rate is <em>net</em> of what would have happened anyway; the taper across Years 1–3 is your drop-off. Set a year's parameters to zero if the benefit doesn't persist (one-off, event-based outcomes).</p>
+  <div class="note" style="margin-top:20px">
+    <h4>What this tool deliberately does not do</h4>
+    <p>It only computes the priced stream. Outcomes you've decided to hold whole — intrinsic, taonga outcomes — don't belong in here as lines with clever proxies. Report them alongside the ratio as evidenced narrative, and keep the two streams separate all the way to the decision-maker. Refreshing the page clears the model, so note down parameters you want to keep.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p><b>Worked example source:</b> "VOYCE – Whakarongo Mai: Social Impact Assessment" (Matatihi, March 2026), reconstructed from published parameters using Treasury CBAx conventions. Verify all proxy values against the current CBAx impacts database before using results in a real business case.</p>
+</div></footer>
+
+<script src="calc.js"></script>
+</body>
+</html>
